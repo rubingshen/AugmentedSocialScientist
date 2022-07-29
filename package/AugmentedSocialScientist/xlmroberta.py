@@ -20,7 +20,7 @@ from transformers import XLMRobertaTokenizer, XLMRobertaConfig,\
                          WEIGHTS_NAME, CONFIG_NAME
 
 device = torch.device("cuda")
-tokenizer = XLMRobertaTokenizer.from_pretrained('xlmr.base.v0')
+tokenizer = XLMRobertaTokenizer.from_pretrained('xlm-roberta-base')
 
 def encode(sentences, labels=None, tokenizer=tokenizer, batch_size=32, progress_bar=True):
     input_ids = []
@@ -108,7 +108,7 @@ def run_training(train_dataloader,
     torch.cuda.manual_seed_all(seed_val)
     
     # Load model
-    model = XLMRobertaForSequenceClassification.from_pretrained('xlmr.base.v0', 
+    model = XLMRobertaForSequenceClassification.from_pretrained('xlm-roberta-base', 
                                                                num_labels = num_labels, 
                                                                output_attentions = False, 
                                                                output_hidden_states = False)
