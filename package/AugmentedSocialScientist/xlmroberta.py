@@ -14,13 +14,13 @@ from sklearn.metrics import classification_report,precision_recall_fscore_suppor
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from keras.preprocessing.sequence import pad_sequences
-from transformers import BertTokenizer, BertConfig,\
-                         BertForSequenceClassification,\
+from transformers import XLMRobertaTokenizer, XLMRobertaConfig,\
+                         XLMRobertaForSequenceClassification,\
                          AdamW, get_linear_schedule_with_warmup,\
                          WEIGHTS_NAME, CONFIG_NAME
 
 device = torch.device("cuda")
-tokenizer = BertTokenizer.from_pretrained('KB/bert-base-swedish-cased')
+tokenizer = XLMRobertaTokenizer.from_pretrained('xlmr.base.v0')
 
 def encode(sentences, labels=None, tokenizer=tokenizer, batch_size=32, progress_bar=True):
     input_ids = []
@@ -108,7 +108,7 @@ def run_training(train_dataloader,
     torch.cuda.manual_seed_all(seed_val)
     
     # Load model
-    model = BertForSequenceClassification.from_pretrained('KB/bert-base-swedish-cased', 
+    model = XLMRobertaForSequenceClassification.from_pretrained('xlmr.base.v0', 
                                                                num_labels = num_labels, 
                                                                output_attentions = False, 
                                                                output_hidden_states = False)
@@ -326,6 +326,6 @@ def predict(dataloader, model, proba=True, progress_bar=True):
         return pred
     
 def predict_with_model(dataloader, model_path, proba=True):
-    model = BertForSequenceClassification.from_pretrained(model_path)
+    model = XLMRobertaForSequenceClassification.from_pretrained(model_path)
     model.cuda()
     return predict(dataloader, model, proba)
