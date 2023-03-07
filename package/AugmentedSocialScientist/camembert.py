@@ -19,7 +19,24 @@ from transformers import CamembertTokenizer, CamembertConfig,\
                          WEIGHTS_NAME, CONFIG_NAME
 from transformers import CamembertForSequenceClassification
 
-device = torch.device("cuda")
+#device = torch.device("cuda")
+
+# If there's a GPU available...
+if torch.cuda.is_available():
+
+    # Tell PyTorch to use the GPU.
+    device = torch.device("cuda")
+
+    print('There are %d GPU(s) available.' % torch.cuda.device_count())
+
+    print('We will use GPU {}:'.format(torch.cuda.current_device()), torch.cuda.get_device_name(torch.cuda.current_device()))
+
+# If not...
+else:
+    print('No GPU available, using the CPU instead.')
+    device = torch.device("cpu")
+
+
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 
 def encode(sentences, labels=None, tokenizer=tokenizer, batch_size=32, progress_bar=True):
@@ -113,7 +130,8 @@ def run_training(train_dataloader,
                                                                output_attentions = False, 
                                                                output_hidden_states = False)
     # Tell pytorch to run this model on the GPU.
-    model.cuda()
+    if torch.cuda.is_available():
+        model.cuda()
     
     optimizer = AdamW(model.parameters(), lr = lr, eps = 1e-8)
     # Create the learning rate scheduler.
@@ -327,5 +345,6 @@ def predict(dataloader, model, proba=True, progress_bar=True):
     
 def predict_with_model(dataloader, model_path, proba=True):
     model = CamembertForSequenceClassification.from_pretrained(model_path)
-    model.cuda()
+    if torch.cuda.is_available():
+        model.cuda()
     return predict(dataloader, model, proba)
