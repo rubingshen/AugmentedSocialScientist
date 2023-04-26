@@ -1,0 +1,3 @@
+# Ignore post-setup stuff
+*/*.egg-info
+package/build
