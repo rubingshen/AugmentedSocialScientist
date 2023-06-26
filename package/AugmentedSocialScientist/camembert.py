@@ -117,7 +117,8 @@ def run_training(train_dataloader,
     for batch in test_dataloader:
         test_labels += batch[2].numpy().tolist()
     num_labels = np.unique(test_labels).size
-    
+    assert set(test_labels)=={0,1}, "The labels should be intergers starting from 0: 0, 1, 2,..."
+
     # Set the seed value all over the place to make this reproducible.
     random.seed(random_state)
     np.random.seed(random_state)
