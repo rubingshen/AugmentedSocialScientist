@@ -13,7 +13,7 @@ from sklearn.metrics import classification_report,precision_recall_fscore_suppor
 
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from transformers import XLMRobertaTokenizer, XLMRobertaConfig,\
                          XLMRobertaForSequenceClassification,\
                          AdamW, get_linear_schedule_with_warmup,\
