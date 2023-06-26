@@ -107,8 +107,9 @@ def run_training(train_dataloader,
                  test_dataloader, 
                  n_epochs=3, 
                  lr=5e-5, 
-                 seed_val=2018, 
-                 save_model_as=None):
+                 random_state=2018,
+                 save_model_as=None
+                 seed_val=2018):
     
     # Unpack all test labels for evaluation
     test_labels = []
@@ -117,10 +118,10 @@ def run_training(train_dataloader,
     num_labels = np.unique(test_labels).size
     
     # Set the seed value all over the place to make this reproducible.
-    random.seed(seed_val)
-    np.random.seed(seed_val)
-    torch.manual_seed(seed_val)
-    torch.cuda.manual_seed_all(seed_val)
+    random.seed(random_state)
+    np.random.seed(random_state)
+    torch.manual_seed(random_state)
+    torch.cuda.manual_seed_all(random_state)
     
     # Load model
     model = BertForSequenceClassification.from_pretrained("bert-base-uncased", 
