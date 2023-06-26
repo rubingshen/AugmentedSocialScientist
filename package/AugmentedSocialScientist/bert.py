@@ -108,8 +108,7 @@ def run_training(train_dataloader,
                  n_epochs=3, 
                  lr=5e-5, 
                  random_state=2018,
-                 save_model_as=None
-                 seed_val=2018):
+                 save_model_as=None):
     
     # Unpack all test labels for evaluation
     test_labels = []
