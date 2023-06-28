@@ -35,7 +35,7 @@ else:
     device = torch.device("cpu")
 
 
-tokenizer = BertTokenizer.from_pretrained("bert-base-german-uncased")
+tokenizer = BertTokenizer.from_pretrained("dbmdz/bert-base-german-uncased")
 
 def encode(sentences, labels=None, tokenizer=tokenizer, batch_size=32, progress_bar=True):
     input_ids = []
@@ -124,7 +124,7 @@ def run_training(train_dataloader,
     torch.cuda.manual_seed_all(random_state)
     
     # Load model
-    model = BertForSequenceClassification.from_pretrained("bert-base-german-uncased", 
+    model = BertForSequenceClassification.from_pretrained("dbmdz/bert-base-german-uncased", 
                                                                num_labels = num_labels, 
                                                                output_attentions = False, 
                                                                output_hidden_states = False)
