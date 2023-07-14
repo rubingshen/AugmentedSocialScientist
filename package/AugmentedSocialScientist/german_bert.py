@@ -38,6 +38,37 @@ else:
 tokenizer = BertTokenizer.from_pretrained("dbmdz/bert-base-german-uncased")
 
 def encode(sentences, labels=None, tokenizer=tokenizer, batch_size=32, progress_bar=True):
+    """
+    Preprocessing of the training, test or prediction data.
+    The function will:
+        (1) tokenize the sentences and map tokens to theirs IDs;
+        (2) truncate or pad to 512 tokens (limit for BERT), create corresponding attention masks;
+        (3) return a pytorch dataloader object containing token ids, labels and attention masks.
+        
+    Parameters
+    ----------
+    sentences: 1D array-like
+        list of texts
+    
+    labels: 1D array-like or None, default=None
+        list of labels. None for unlabelled prediction data
+    
+    tokenizer: huggingface tokenizer, default=BertTokenizer.from_pretrained('bert-base-uncased')
+        tokenizer to use
+    
+    batch_size: int, default=32
+        batch size for pytorch dataloader
+    
+    progress_bar: bool, default=True
+        if True, print progress bar for the processing
+        
+        
+    Return
+    ------
+    dataloader:
+        pytorch dataloader object containing token ids, labels and attention masks
+    
+    """
     input_ids = []
     if progress_bar:
         sent_loader = tqdm(sentences)
@@ -109,7 +140,35 @@ def run_training(train_dataloader,
                  lr=5e-5, 
                  random_state=2018,
                  save_model_as=None):
+    """
+    Train, evaluate and save a German BERT model
     
+    Parameters
+    ----------
+    train_dataloader: dataloader
+        training dataloader obtained with encode()
+    
+    test_dataloader: dataloader
+        test dataloader obtained with encode()
+        
+    n_epochs: int, default=3
+        number of epochs
+        
+    lr: float, default=5e-5
+        learning rate
+        
+    random state: int, default=2018
+        random state (for replicability)
+        
+    save_model_as: str, default=None
+        the name of model saving folder. The model will be saved at ./models/<model_name>. If None, not saving the model after training
+       
+       
+    Return
+    ------
+    score: ndarray
+        evaluation scores of the model: precision, recall, f1-score and support for each category
+    """    
     # Unpack all test labels for evaluation
     test_labels = []
     for batch in test_dataloader:
@@ -302,6 +361,28 @@ def run_training(train_dataloader,
 
 
 def predict(dataloader, model, proba=True, progress_bar=True):
+    """
+    Prediction with a trained model. 
+    
+    Parameters
+    ----------
+    dataloader: dataloader
+        prediction dataloader obtained with encode()
+        
+    model: huggingface model
+        trained model
+        
+    proba: bool, default=True
+        if True, return prediction probabilites; else, return logits
+    
+    progress_bar: bool, defalut=True
+        if True, print progress bar of prediction
+    
+    Return
+    ------
+    pred: ndarray of shape (n_samples, n_labels)
+        probabilities for each sentence (row) of belonging to each category (column)
+    """
     logits_complete = []
     # Evaluate data for one epoch
     if progress_bar:
@@ -342,8 +423,30 @@ def predict(dataloader, model, proba=True, progress_bar=True):
     else:
         return pred
     
-def predict_with_model(dataloader, model_path, proba=True):
+def predict_with_model(dataloader, model_path, proba=True, progress_bar=True):
+    """
+    Prediction with a locally saved model. 
+    
+    Parameters
+    ----------
+    dataloader: dataloader
+        prediction dataloader obtained with encode()
+        
+    model_path: str
+        path to the saved model
+        
+    proba: bool, default=True
+        if True, return prediction probabilites; else, return logits
+    
+    progress_bar: bool, defalut=True
+        if True, print progress bar of prediction
+    
+    Return
+    ------
+    pred: ndarray of shape (n_samples, n_labels)
+        probabilities for each sentence (row) of belonging to each category (column)
+    """
     model = BertForSequenceClassification.from_pretrained(model_path)
     if torch.cuda.is_available():
         model.cuda()
-    return predict(dataloader, model, proba)
+    return predict(dataloader, model, proba, progress_bar)
