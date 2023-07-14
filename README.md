@@ -9,7 +9,7 @@ It comes with our article "[The Augmented Social Scientist: Using Sequential Tra
 ## To install the package
 ```
 git clone https://github.com/rubingshen/AugmentedSocialScientist.git  
-pip install ./AugmentedSocialScientist/package/
+pip install ./AugmentedSocialScientist
 ```
 
 ## Import BERT model
