@@ -7,6 +7,13 @@ It comes with our article "[The Augmented Social Scientist: Using Sequential Tra
 
 
 ## To install the package
+
+- Use pip
+```
+pip install AugmentedSocialScientist
+```
+
+- Or from source
 ```
 git clone https://github.com/rubingshen/AugmentedSocialScientist.git  
 pip install ./AugmentedSocialScientist
