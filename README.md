@@ -35,7 +35,7 @@ Check [here](https://colab.research.google.com/drive/132_oDik-SOWve31tZ8D1VOx1Sj
 
 ## Languages supported
 
-The package also contains models for other languages:
+BERT is a pre-trained language model for the English language. The package also contains models for other languages:
 - `camembert` for French;
 - `arabic_bert` for Arabic;
 - `chinese_bert` for Chinese;
