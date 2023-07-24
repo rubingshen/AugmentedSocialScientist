@@ -9,7 +9,8 @@ class BertABC(ABC):
     @abstractmethod
     def __init__(
             self,
-            tokenizer
+            tokenizer,
+            device=None
     ):
         pass
 
@@ -20,13 +21,6 @@ class BertABC(ABC):
             labels=None,
             batch_size=32,
             progress_bar=True
-    ):
-        pass
-
-    @abstractmethod
-    def format_time(
-            self,
-            elapsed
     ):
         pass
 
@@ -52,11 +46,19 @@ class BertABC(ABC):
     ):
         pass
 
+    @abstractmethod
     def predict_with_model(
             self,
             dataloader,
             model_path,
             proba=True,
             progress_bar=True
+    ):
+        pass
+
+    @abstractmethod
+    def format_time(
+            self,
+            elapsed
     ):
         pass
