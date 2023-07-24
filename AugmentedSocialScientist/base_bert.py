@@ -205,10 +205,8 @@ class BertBase(BertABC):
         torch.cuda.manual_seed_all(random_state)
 
         # Load model
-        model = self.model_sequence_classifier.from_pretrained("bert-base-uncased",
-                                                              num_labels=num_labels,
-                                                              output_attentions=False,
-                                                              output_hidden_states=False)
+        model = self.load_model(num_labels)
+
         # Tell pytorch to run this model on the GPU.
         if torch.cuda.is_available():
             model.cuda()
@@ -476,6 +474,15 @@ class BertBase(BertABC):
         if torch.cuda.is_available():
             model.cuda()
         return self.predict(dataloader, model, proba, progress_bar)
+
+    def load_model(
+            self,
+            num_labels
+    ):
+        return self.model_sequence_classifier.from_pretrained("bert-base-uncased",
+                                                       num_labels=num_labels,
+                                                       output_attentions=False,
+                                                       output_hidden_states=False)
 
     def format_time(
             self,
