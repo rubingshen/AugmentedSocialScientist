@@ -1,6 +1,6 @@
 from transformers import BertTokenizer, BertForSequenceClassification
 
-from base_bert import BertBase
+from AugmentedSocialScientist.base_bert import BertBase
 
 
 class ItalianBert(BertBase):

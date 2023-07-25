@@ -1,9 +1,9 @@
 from transformers import XLMRobertaForSequenceClassification, XLMRobertaTokenizer
 
-from base_bert import BertBase
+from AugmentedSocialScientist.base_bert import BertBase
 
 
-class XMLRoBerta(BertBase):
+class XLMRoBerta(BertBase):
     def __init__(
             self,
             device=None

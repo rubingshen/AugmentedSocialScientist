@@ -1,6 +1,6 @@
 from transformers import CamembertTokenizer, CamembertForSequenceClassification
 
-from base_bert import BertBase
+from AugmentedSocialScientist.base_bert import BertBase
 
 
 class CamemBert(BertBase):
