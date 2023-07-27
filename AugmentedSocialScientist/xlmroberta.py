@@ -3,7 +3,7 @@ from transformers import XLMRobertaForSequenceClassification, XLMRobertaTokenize
 from AugmentedSocialScientist.base_bert import BertBase
 
 
-class XLMRoBerta(BertBase):
+class XLMRoberta(BertBase):
     def __init__(
             self,
             device=None

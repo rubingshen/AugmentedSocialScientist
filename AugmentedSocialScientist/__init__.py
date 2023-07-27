@@ -2,7 +2,7 @@ from .arabic_bert import ArabicBert
 from .base_bert import BertBase
 from .bert import Bert
 from .bert_abc import BertABC
-from .camembert import CamemBert
+from .camembert import Camembert
 from .chinese_bert import ChineseBert
 from .german_bert import GermanBert
 from .hindi_bert import HindiBert
@@ -11,4 +11,5 @@ from .portuguese_bert import PortugueseBert
 from .russian_bert import RussianBert
 from .spanish_bert import SpanishBert
 from .swedish_bert import SwedishBert
-from .xlmroberta import XLMRoBerta
+from .xlmroberta import XLMRoberta
+from .custom_bert import CustomBert

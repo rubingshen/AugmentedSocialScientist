@@ -3,7 +3,7 @@ from transformers import CamembertTokenizer, CamembertForSequenceClassification
 from AugmentedSocialScientist.base_bert import BertBase
 
 
-class CamemBert(BertBase):
+class Camembert(BertBase):
     def __init__(
             self,
             device=None

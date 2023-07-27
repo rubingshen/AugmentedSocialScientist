@@ -5,7 +5,6 @@ import os
 
 import numpy as np
 import torch
-from keras.src.utils import pad_sequences
 from scipy.special import softmax
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from tqdm import tqdm
@@ -24,7 +23,6 @@ class BertBase(BertABC):
             model_sequence_classifier=BertForSequenceClassification
     ):
         """
-
         Parameters
         ----------
         tokenizer: huggingface tokenizer, default=BertTokenizer.from_pretrained('bert-base-uncased')
@@ -57,7 +55,7 @@ class BertBase(BertABC):
 
     def encode(
             self,
-            sentences,
+            sequences,
             labels=None,
             batch_size=32,
             progress_bar=True
@@ -65,7 +63,7 @@ class BertBase(BertABC):
         """
             Preprocessing of the training, test or prediction data.
             The function will:
-                (1) tokenize the sentences and map tokens to theirs IDs;
+                (1) tokenize the sequences and map tokens to theirs IDs;
                 (2) truncate or pad to 512 tokens (limit for BERT), create corresponding attention masks;
                 (3) return a pytorch dataloader object containing token ids, labels and attention masks.
 
@@ -92,9 +90,9 @@ class BertBase(BertABC):
             """
         input_ids = []
         if progress_bar:
-            sent_loader = tqdm(sentences)
+            sent_loader = tqdm(sequences)
         else:
-            sent_loader = sentences
+            sent_loader = sequences
         for sent in sent_loader:
             # `encode` will:
             #   (1) Tokenize the sentence.
@@ -110,10 +108,13 @@ class BertBase(BertABC):
 
         MAX_LEN = min(max([len(sen) for sen in input_ids]), 512)
 
-        # Pad our input tokens with value 0.
-        # "post" indicates that we want to pad and truncate at the end of the sequence, as opposed to the beginning.
-        input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long",
-                                  value=0, truncating="post", padding="post")
+        # Pad the input tokens with value 0 and truncate to MAX_LEN
+        pad = np.full((len(input_ids), MAX_LEN), 0, dtype='long')
+        for idx, s in enumerate(input_ids):
+            trunc = s[:MAX_LEN]
+            pad[idx, :len(trunc)] = trunc
+
+        input_ids = pad 
 
         # Create attention masks
         attention_masks = []
@@ -123,7 +124,7 @@ class BertBase(BertABC):
             input_loader = input_ids
         for sent in input_loader:
             # Create the attention mask.
-            #   - If a token ID is 0, then it's padding, set the mask to 0.
+            #   - If a token ID is 0, then it's padded, set the mask to 0.
             #   - If a token ID is > 0, then it's a real token, set the mask to 1.
             att_mask = [int(token_id > 0) for token_id in sent]
 
