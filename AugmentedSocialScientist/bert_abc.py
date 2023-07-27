@@ -9,15 +9,17 @@ class BertABC(ABC):
     @abstractmethod
     def __init__(
             self,
+            model_name,
             tokenizer,
-            device=None
+            model_sequence_classifier,
+            device=None,
     ):
         pass
 
     @abstractmethod
     def encode(
             self,
-            sentences,
+            sequences,
             labels=None,
             batch_size=32,
             progress_bar=True
@@ -31,7 +33,7 @@ class BertABC(ABC):
             test_dataloader,
             n_epochs=3,
             lr=5e-5,
-            random_state=2018,
+            random_state=42,
             save_model_as=None
     ):
         pass

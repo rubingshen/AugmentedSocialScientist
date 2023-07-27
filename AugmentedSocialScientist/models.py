@@ -3,7 +3,7 @@ from transformers import BertTokenizer, BertForSequenceClassification, \
                          XLMRobertaForSequenceClassification, XLMRobertaTokenizer
                          
 
-from AugmentedSocialScientist.base_bert import BertBase
+from AugmentedSocialScientist.bert_base import BertBase
 
 
 class Bert(BertBase):

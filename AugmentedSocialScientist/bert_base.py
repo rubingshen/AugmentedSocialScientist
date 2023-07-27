@@ -18,24 +18,31 @@ from AugmentedSocialScientist.bert_abc import BertABC
 class BertBase(BertABC):
     def __init__(
             self,
-            tokenizer=BertTokenizer.from_pretrained('bert-base-uncased'),
+            model_name='bert-base-uncased',
+            tokenizer=BertTokenizer,
+            model_sequence_classifier=BertForSequenceClassification,
             device=None,
-            model_sequence_classifier=BertForSequenceClassification
+
     ):
         """
-        Parameters
-        ----------
-        tokenizer: huggingface tokenizer, default=BertTokenizer.from_pretrained('bert-base-uncased')
-                tokenizer to use
+            Parameters
+            ----------
+            model_name: str, default='bert-base-uncased'
+                    a model name from huggingface models: https://huggingface.co/models
 
-        device: torch.Device
-                device to use
+            tokenizer: huggingface tokenizer, default=BertTokenizer.from_pretrained('bert-base-uncased')
+                    tokenizer to use
 
-        model_sequence_classifier: Bert Sequence Classifier, default=BertForSequenceClassification
-                a Bert sequence classifier that implements a from_pretrained() function
+            device: torch.Device, default=None
+                    device to use. If None, 
+
+            model_sequence_classifier: huggingface sequence classifier, default=BertForSequenceClassification
+                    a huggingface sequence classifier that implements a from_pretrained() function
         """
-        self.tokenizer = tokenizer
+        self.model_name = model_name
+        self.tokenizer = tokenizer.from_pretrained(self.model_name)
         self.model_sequence_classifier = model_sequence_classifier
+        self.dict_labels = None
 
         # Users can set their device (flexibility),
         # but device is set by default in case users are not familiar with Pytorch
@@ -106,12 +113,12 @@ class BertBase(BertABC):
                                             )
             input_ids.append(encoded_sent)
 
-        MAX_LEN = min(max([len(sen) for sen in input_ids]), 512)
+        max_len = min(max([len(sen) for sen in input_ids]), 512)
 
         # Pad the input tokens with value 0 and truncate to MAX_LEN
-        pad = np.full((len(input_ids), MAX_LEN), 0, dtype='long')
+        pad = np.full((len(input_ids), max_len), 0, dtype='long')
         for idx, s in enumerate(input_ids):
-            trunc = s[:MAX_LEN]
+            trunc = s[:max_len]
             pad[idx, :len(trunc)] = trunc
 
         input_ids = pad 
@@ -141,10 +148,16 @@ class BertBase(BertABC):
             dataloader = DataLoader(data, sampler=sampler, batch_size=batch_size)
             return dataloader
         else:
+
+            label_names = np.unique(labels) # unique label names in alphabetical order
+            self.dict_labels = dict(zip(label_names, range(len(label_names))))
+
+            print(f"label ids: {self.dict_labels}")
+
             # Convert to pytorch tensors
             inputs_tensors = torch.tensor(input_ids)
             masks_tensors = torch.tensor(attention_masks)
-            labels_tensors = torch.tensor(labels)
+            labels_tensors = torch.tensor([self.dict_labels[x] for x in labels])
 
             # Create the DataLoader
             data = TensorDataset(inputs_tensors, masks_tensors, labels_tensors)
@@ -158,19 +171,19 @@ class BertBase(BertABC):
             test_dataloader,
             n_epochs=3,
             lr=5e-5,
-            random_state=2018,
+            random_state=42,
             save_model_as=None
     ):
         """
-            Train, evaluate and save a BERT model
+            Train, evaluate and save a BERT model.
 
             Parameters
             ----------
-            train_dataloader: dataloader
-                training dataloader obtained with encode()
+            train_dataloader: torch.Dataloader 
+                training dataloader obtained with self.encode()
 
-            test_dataloader: dataloader
-                test dataloader obtained with encode()
+            test_dataloader: torch.Dataloader 
+                test dataloader obtained with self.encode()
 
             n_epochs: int, default=3
                 number of epochs
@@ -178,7 +191,7 @@ class BertBase(BertABC):
             lr: float, default=5e-5
                 learning rate
 
-            random_state: int, default=2018
+            random_state: int, default=42
                 random state (for replicability)
 
             save_model_as: str, default=None
@@ -187,7 +200,7 @@ class BertBase(BertABC):
 
             Return
             ------
-            score: ndarray
+            score: ndarray of (4, n_labels) TODO check dimension
                 evaluation scores of the model: precision, recall, f1-score and support for each category
             """
 
@@ -196,8 +209,11 @@ class BertBase(BertABC):
         for batch in test_dataloader:
             test_labels += batch[2].numpy().tolist()
         num_labels = np.unique(test_labels).size
-        assert set(test_labels) == set(
-            range(len(np.unique(test_labels)))), "The labels should be integers starting from 0: 0, 1, 2,..."
+
+        if self.dict_labels is None:
+            label_names = None
+        else:
+            label_names = [str(x[0]) for x in sorted(self.dict_labels.items(), key=lambda x: x[1])]
 
         # Set the seed value all over the place to make this reproducible.
         random.seed(random_state)
@@ -206,7 +222,10 @@ class BertBase(BertABC):
         torch.cuda.manual_seed_all(random_state)
 
         # Load model
-        model = self.load_model(num_labels)
+        model = self.model_sequence_classifier.from_pretrained(self.model_name,
+                                                               num_labels=num_labels,
+                                                               output_attentions=False,
+                                                               output_hidden_states=False)
 
         # Tell pytorch to run this model on the GPU.
         if torch.cuda.is_available():
@@ -343,7 +362,7 @@ class BertBase(BertABC):
             print("")
             print("  Average test loss: {0:.2f}".format(avg_test_loss))
             print("  Validation took: {:}".format(self.format_time(time.time() - t0)))
-            print(classification_report(test_labels, np.argmax(logits_complete, axis=1).flatten()))
+            print(classification_report(test_labels, np.argmax(logits_complete, axis=1).flatten(), target_names = label_names))
             score = precision_recall_fscore_support(test_labels, np.argmax(logits_complete, axis=1).flatten())
 
         # End of all epochs
@@ -386,8 +405,8 @@ class BertBase(BertABC):
 
         Parameters
         ----------
-        dataloader: dataloader
-            prediction dataloader obtained with encode()
+        dataloader: torch.Dataloader 
+            prediction dataloader obtained with self.encode()
 
         model: huggingface model
             trained model
@@ -438,7 +457,8 @@ class BertBase(BertABC):
             del outputs
             torch.cuda.empty_cache()  # release GPU memory
 
-            pred = np.concatenate(logits_complete)  # flatten batches
+        pred = np.concatenate(logits_complete)  # flatten batches
+        print(f"label ids: {self.dict_labels}")
 
         return softmax(pred, axis=1) if proba else pred
 
@@ -454,8 +474,8 @@ class BertBase(BertABC):
 
         Parameters
         ----------
-        dataloader: dataloader
-            prediction dataloader obtained with encode()
+        dataloader: torch.Dataloader 
+            prediction dataloader obtained with self.encode()
 
         model_path: str
             path to the saved model
@@ -476,15 +496,7 @@ class BertBase(BertABC):
             model.cuda()
         return self.predict(dataloader, model, proba, progress_bar)
 
-    def load_model(
-            self,
-            num_labels
-    ):
-        return self.model_sequence_classifier.from_pretrained("bert-base-uncased",
-                                                       num_labels=num_labels,
-                                                       output_attentions=False,
-                                                       output_hidden_states=False)
-
+ 
     def format_time(
             self,
             elapsed: float | int
