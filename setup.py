@@ -7,6 +7,7 @@ environment = [
     'scipy',
     'torch',
     'transformers',
+    'sentencepiece'
 ]
 
 with open("README.md", "r") as fh:
@@ -19,7 +20,7 @@ setup(name='AugmentedSocialScientist',
       url='https://github.com/rubingshen/AugmentedSocialScientist',
       download_url='https://github.com/rubingshen/AugmentedSocialScientist/archive/refs/tags/v2.0.0.tar.gz',
       version='2.0.0',
-      description='A Simple Package to Train Bert-Like Model for Text Classification',
+      description='A Package to Easily Train Bert-Like Models for Text Classification',
       long_description=long_description,
       long_description_content_type="text/markdown",
       packages=['AugmentedSocialScientist'],

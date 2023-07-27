@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from scipy.special import softmax
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from sklearn.metrics import classification_report, precision_recall_fscore_support
 from transformers import BertForSequenceClassification, BertTokenizer, AdamW, get_linear_schedule_with_warmup,\
                             WEIGHTS_NAME, CONFIG_NAME
