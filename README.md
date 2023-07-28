@@ -125,7 +125,7 @@ For example, to use the French language model `Camembert`:
 ```python
 from AugmentedSocialScientist.models import Camembert
 
-bert = Camembert() #instanciation
+bert = Camembert()  #instanciation
 ```
 You can then use the functions `bert.encode()`, `bert.run_training()`, `bert.predict_with_model()` as in the previous example.
 
@@ -141,7 +141,7 @@ from AugmentedSocialScientist.models import Bert
 bert = Bert(model_name="DJSammy/bert-base-danish-uncased_BotXO-ai")
 ``````
 
-## GPU acceleration
+## To use a custom `torch.Device`
 By default, the package automatically detects the presence of a GPU and uses it to accelerate computation. You can also set your own device, by providing a `torch.Device` object to the parameter `device` when instanciating `Bert`.
 
 ```python
