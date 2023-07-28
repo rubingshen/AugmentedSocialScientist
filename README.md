@@ -1,6 +1,6 @@
 # The Augmented Social Scientist
 
-**New release v2.0.0**
+**New release v2**
 
 This package makes it extremely easy to train BERT-like models for text classifications. 
 
