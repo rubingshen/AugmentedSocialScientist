@@ -33,11 +33,11 @@ class BertBase(BertABC):
             tokenizer: huggingface tokenizer, default=BertTokenizer.from_pretrained('bert-base-uncased')
                     tokenizer to use
 
-            device: torch.Device, default=None
-                    device to use. If None, 
-
             model_sequence_classifier: huggingface sequence classifier, default=BertForSequenceClassification
                     a huggingface sequence classifier that implements a from_pretrained() function
+
+            device: torch.Device, default=None
+                    device to use. If None, automatically set if presence of GPU is detected. CPU otherwise. 
         """
         self.model_name = model_name
         self.tokenizer = tokenizer.from_pretrained(self.model_name)

@@ -140,3 +140,12 @@ from AugmentedSocialScientist.models import Bert
 
 bert = Bert(model_name="DJSammy/bert-base-danish-uncased_BotXO-ai")
 ``````
+
+## GPU acceleration
+By default, the package automatically detects the presence of a GPU and uses it to accelerate computation. You can also set your own device, by providing a `torch.Device` object to the parameter `device` when instanciating `Bert`.
+
+```python
+from AugmentedSocialScientist.models import Bert
+
+bert = Bert(device=...)  #set your own device
+```
