@@ -76,7 +76,7 @@ class BertBase(BertABC):
 
             Parameters
             ----------
-            sentences: 1D array-like
+            sequences: 1D array-like
                 list of texts
 
             labels: 1D array-like or None, default=None
@@ -102,13 +102,13 @@ class BertBase(BertABC):
             sent_loader = sequences
         for sent in sent_loader:
             # `encode` will:
-            #   (1) Tokenize the sentence.
+            #   (1) Tokenize the sequence.
             #   (2) Prepend the `[CLS]` token to the start.
             #   (3) Append the `[SEP]` token to the end.
             #   (4) Map tokens to their IDs.
-            encoded_sent = self.tokenizer.encode(sent,  # Sentence to encode.
+            encoded_sent = self.tokenizer.encode(sent,  # Sequence to encode.
                                             add_special_tokens=True  # Add '[CLS]' and '[SEP]'
-                                            # max_length = 128,          # Truncate all sentences.
+                                            # max_length = 128,          # Truncate all sequences.
                                             # return_tensors = 'pt',     # Return pytorch tensors.
                                             )
             input_ids.append(encoded_sent)
@@ -195,13 +195,13 @@ class BertBase(BertABC):
                 random state (for replicability)
 
             save_model_as: str, default=None
-                the name of model saving folder. The model will be saved at ./models/<model_name>. If None, not saving the model after training
+                name of model to save as. The model will be saved at ./models/<model_name>. If None, not saving the model after training
 
 
             Return
             ------
-            score: ndarray of (4, n_labels) TODO check dimension
-                evaluation scores of the model: precision, recall, f1-score and support for each category
+            scores: tuplet, 4 arrays of shape (n_labels,)
+                evaluation scores: precision, recall, f1-score and support for each label
             """
 
         # Unpack all test labels for evaluation
@@ -363,7 +363,7 @@ class BertBase(BertABC):
             print("  Average test loss: {0:.2f}".format(avg_test_loss))
             print("  Validation took: {:}".format(self.format_time(time.time() - t0)))
             print(classification_report(test_labels, np.argmax(logits_complete, axis=1).flatten(), target_names = label_names))
-            score = precision_recall_fscore_support(test_labels, np.argmax(logits_complete, axis=1).flatten())
+            scores = precision_recall_fscore_support(test_labels, np.argmax(logits_complete, axis=1).flatten())
 
         # End of all epochs
         print("")
@@ -390,7 +390,7 @@ class BertBase(BertABC):
             model_to_save.config.to_json_file(output_config_file)
             self.tokenizer.save_vocabulary(output_dir)
 
-        return score
+        return scores
 
 
     def predict(
@@ -420,7 +420,7 @@ class BertBase(BertABC):
         Return
         ------
         pred: ndarray of shape (n_samples, n_labels)
-            probabilities for each sentence (row) of belonging to each category (column)
+            probabilities for each sequence (row) of belonging to each category (column)
         """
         logits_complete = []
         # Evaluate data for one epoch
@@ -489,7 +489,7 @@ class BertBase(BertABC):
         Return
         ------
         pred: ndarray of shape (n_samples, n_labels)
-            probabilities for each sentence (row) of belonging to each category (column)
+            probabilities for each sequence (row) of belonging to each category (column)
         """
         model = self.model_sequence_classifier.from_pretrained(model_path)
         if torch.cuda.is_available():
