@@ -2,10 +2,12 @@ import datetime
 import random
 import time
 import os
+from typing import List, Tuple, Any
 
 import numpy as np
 import torch
 from scipy.special import softmax
+from torch.types import Device
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from tqdm.auto import tqdm
 from sklearn.metrics import classification_report, precision_recall_fscore_support
@@ -18,10 +20,10 @@ from AugmentedSocialScientist.bert_abc import BertABC
 class BertBase(BertABC):
     def __init__(
             self,
-            model_name='bert-base-uncased',
-            tokenizer=BertTokenizer,
-            model_sequence_classifier=BertForSequenceClassification,
-            device=None,
+            model_name: str = 'bert-base-uncased',
+            tokenizer: Any = BertTokenizer,
+            model_sequence_classifier: Any = BertForSequenceClassification,
+            device: Device | None = None,
     ):
         """
             Parameters
@@ -61,12 +63,12 @@ class BertBase(BertABC):
 
     def encode(
             self,
-            sequences,
-            labels=None,
-            batch_size=32,
-            progress_bar=True,
+            sequences: List[str],
+            labels: List[str] | None = None,
+            batch_size: int = 32,
+            progress_bar: bool = True,
             add_special_tokens: bool = True
-    ):
+    ) -> DataLoader:
         """
             Preprocessing of the training, test or prediction data.
             The function will:
@@ -170,13 +172,13 @@ class BertBase(BertABC):
 
     def run_training(
             self,
-            train_dataloader,
-            test_dataloader,
-            n_epochs=3,
-            lr=5e-5,
-            random_state=42,
-            save_model_as=None
-    ):
+            train_dataloader: DataLoader,
+            test_dataloader: DataLoader,
+            n_epochs: int = 3,
+            lr: float = 5e-5,
+            random_state: int = 42,
+            save_model_as: str | None = None
+    ) -> Tuple[Any, Any, Any, Any]:
         """
             Train, evaluate and save a BERT model.
 
@@ -204,7 +206,7 @@ class BertBase(BertABC):
 
             Return
             ------
-            scores: tuplet, 4 arrays of shape (n_labels,)
+            scores: tuple, 4 arrays of shape (n_labels,)
                 evaluation scores: precision, recall, f1-score and support for each label
             """
 
@@ -402,10 +404,10 @@ class BertBase(BertABC):
 
     def predict(
             self,
-            dataloader,
-            model,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model: Any,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         """
         Prediction with a trained model.
@@ -470,10 +472,10 @@ class BertBase(BertABC):
 
     def predict_with_model(
             self,
-            dataloader,
-            model_path,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model_path: str,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         """
         Prediction with a locally saved model.
@@ -519,4 +521,3 @@ class BertBase(BertABC):
         """
         elapsed_rounded = int(round(elapsed))
         return str(datetime.timedelta(seconds=elapsed_rounded))  # Format as hh:mm:ss
-    

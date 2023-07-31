@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import List, Any
+
+from torch.types import Device
+from torch.utils.data import DataLoader
 
 
 class BertABC(ABC):
@@ -9,20 +13,20 @@ class BertABC(ABC):
     @abstractmethod
     def __init__(
             self,
-            model_name,
-            tokenizer,
-            model_sequence_classifier,
-            device=None,
+            model_name: str,
+            tokenizer: Any,
+            model_sequence_classifier: Any,
+            device: Device | None = None,
     ):
         pass
 
     @abstractmethod
     def encode(
             self,
-            sequences,
-            labels=None,
-            batch_size=32,
-            progress_bar=True,
+            sequences: List[str],
+            labels: List[str] | None = None,
+            batch_size: int = 32,
+            progress_bar: bool = True,
             add_special_tokens: bool = True
     ):
         pass
@@ -30,38 +34,38 @@ class BertABC(ABC):
     @abstractmethod
     def run_training(
             self,
-            train_dataloader,
-            test_dataloader,
-            n_epochs=3,
-            lr=5e-5,
-            random_state=42,
-            save_model_as=None
+            train_dataloader: DataLoader,
+            test_dataloader: DataLoader,
+            n_epochs: int = 3,
+            lr: float = 5e-5,
+            random_state: int = 42,
+            save_model_as: str | None = None
     ):
         pass
 
     @abstractmethod
     def predict(
             self,
-            dataloader,
-            model,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model: Any,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         pass
 
     @abstractmethod
     def predict_with_model(
             self,
-            dataloader,
-            model_path,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model_path: str,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         pass
 
     @abstractmethod
     def format_time(
             self,
-            elapsed
+            elapsed: float | int
     ):
         pass
