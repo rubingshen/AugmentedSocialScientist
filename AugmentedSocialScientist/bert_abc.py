@@ -22,7 +22,8 @@ class BertABC(ABC):
             sequences,
             labels=None,
             batch_size=32,
-            progress_bar=True
+            progress_bar=True,
+            add_special_tokens: bool = True
     ):
         pass
 
