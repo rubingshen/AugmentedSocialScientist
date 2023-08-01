@@ -24,7 +24,7 @@ class BertABC(ABC):
     def encode(
             self,
             sequences: List[str],
-            labels: List[str] | None = None,
+            labels: List[str | int] | None = None,
             batch_size: int = 32,
             progress_bar: bool = True,
             add_special_tokens: bool = True
