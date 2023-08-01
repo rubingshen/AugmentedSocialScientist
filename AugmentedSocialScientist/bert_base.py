@@ -2,10 +2,12 @@ import datetime
 import random
 import time
 import os
+from typing import List, Tuple, Any
 
 import numpy as np
 import torch
 from scipy.special import softmax
+from torch.types import Device
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from tqdm.auto import tqdm
 from sklearn.metrics import classification_report, precision_recall_fscore_support
@@ -18,11 +20,10 @@ from AugmentedSocialScientist.bert_abc import BertABC
 class BertBase(BertABC):
     def __init__(
             self,
-            model_name='bert-base-uncased',
-            tokenizer=BertTokenizer,
-            model_sequence_classifier=BertForSequenceClassification,
-            device=None,
-
+            model_name: str = 'bert-base-uncased',
+            tokenizer: Any = BertTokenizer,
+            model_sequence_classifier: Any = BertForSequenceClassification,
+            device: Device | None = None,
     ):
         """
             Parameters
@@ -62,11 +63,12 @@ class BertBase(BertABC):
 
     def encode(
             self,
-            sequences,
-            labels=None,
-            batch_size=32,
-            progress_bar=True
-    ):
+            sequences: List[str],
+            labels: List[str] | None = None,
+            batch_size: int = 32,
+            progress_bar: bool = True,
+            add_special_tokens: bool = True
+    ) -> DataLoader:
         """
             Preprocessing of the training, test or prediction data.
             The function will:
@@ -88,6 +90,8 @@ class BertBase(BertABC):
             progress_bar: bool, default=True
                 if True, print progress bar for the processing
 
+            add_special_tokens: bool, default=True
+                if True, add '[CLS]' and '[SEP]' tokens
 
             Return
             ------
@@ -106,11 +110,12 @@ class BertBase(BertABC):
             #   (2) Prepend the `[CLS]` token to the start.
             #   (3) Append the `[SEP]` token to the end.
             #   (4) Map tokens to their IDs.
-            encoded_sent = self.tokenizer.encode(sent,  # Sequence to encode.
-                                            add_special_tokens=True  # Add '[CLS]' and '[SEP]'
-                                            # max_length = 128,          # Truncate all sequences.
-                                            # return_tensors = 'pt',     # Return pytorch tensors.
-                                            )
+            encoded_sent = self.tokenizer.encode(
+                sent,  # Sequence to encode.
+                add_special_tokens=add_special_tokens  # Add '[CLS]' and '[SEP]'
+                # max_length = 128,          # Truncate all sequences.
+                # return_tensors = 'pt',     # Return pytorch tensors.
+            )
             input_ids.append(encoded_sent)
 
         max_len = min(max([len(sen) for sen in input_ids]), 512)
@@ -149,7 +154,7 @@ class BertBase(BertABC):
             return dataloader
         else:
 
-            label_names = np.unique(labels) # unique label names in alphabetical order
+            label_names = np.unique(labels)  # unique label names in alphabetical order
             self.dict_labels = dict(zip(label_names, range(len(label_names))))
 
             print(f"label ids: {self.dict_labels}")
@@ -167,13 +172,13 @@ class BertBase(BertABC):
 
     def run_training(
             self,
-            train_dataloader,
-            test_dataloader,
-            n_epochs=3,
-            lr=5e-5,
-            random_state=42,
-            save_model_as=None
-    ):
+            train_dataloader: DataLoader,
+            test_dataloader: DataLoader,
+            n_epochs: int = 3,
+            lr: float = 5e-5,
+            random_state: int = 42,
+            save_model_as: str | None = None
+    ) -> Tuple[Any, Any, Any, Any]:
         """
             Train, evaluate and save a BERT model.
 
@@ -195,12 +200,13 @@ class BertBase(BertABC):
                 random state (for replicability)
 
             save_model_as: str, default=None
-                name of model to save as. The model will be saved at ./models/<model_name>. If None, not saving the model after training
+                name of model to save as. The model will be saved at ./models/<model_name>. If None, not saving the
+                model after training
 
 
             Return
             ------
-            scores: tuplet, 4 arrays of shape (n_labels,)
+            scores: tuple, 4 arrays of shape (n_labels,)
                 evaluation scores: precision, recall, f1-score and support for each label
             """
 
@@ -362,7 +368,8 @@ class BertBase(BertABC):
             print("")
             print("  Average test loss: {0:.2f}".format(avg_test_loss))
             print("  Validation took: {:}".format(self.format_time(time.time() - t0)))
-            print(classification_report(test_labels, np.argmax(logits_complete, axis=1).flatten(), target_names = label_names))
+            print(classification_report(test_labels, np.argmax(logits_complete, axis=1).flatten(),
+                                        target_names=label_names))
             scores = precision_recall_fscore_support(test_labels, np.argmax(logits_complete, axis=1).flatten())
 
         # End of all epochs
@@ -374,8 +381,11 @@ class BertBase(BertABC):
             output_dir = "./models/{}".format(save_model_as)
             try:
                 os.makedirs(output_dir)
-            except:
-                pass
+            except FileExistsError:
+                raise FileExistsError(f"The directory {save_model_as} already exists.")
+            except OSError as e:
+                raise OSError(f"Error creating the directory {save_model_as}: {e}")
+
             # Step 1: Save a model, configuration and vocabulary that you have fine-tuned
 
             # If we have a distributed model, save only the encapsulated model
@@ -392,13 +402,12 @@ class BertBase(BertABC):
 
         return scores
 
-
     def predict(
             self,
-            dataloader,
-            model,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model: Any,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         """
         Prediction with a trained model.
@@ -429,7 +438,6 @@ class BertBase(BertABC):
         else:
             loader = dataloader
 
-        pred = None
         for batch in loader:
 
             # Add batch to GPU
@@ -441,7 +449,7 @@ class BertBase(BertABC):
             else:
                 b_input_ids, b_input_mask = batch
 
-            # Telling the model not to compute or store gradients, saving memory andspeeding up validation
+            # Telling the model not to compute or store gradients, saving memory and speeding up validation
             with torch.no_grad():
                 outputs = model(b_input_ids,
                                 token_type_ids=None,  # not a 2-sentence task
@@ -464,10 +472,10 @@ class BertBase(BertABC):
 
     def predict_with_model(
             self,
-            dataloader,
-            model_path,
-            proba=True,
-            progress_bar=True
+            dataloader: DataLoader,
+            model_path: str,
+            proba: bool = True,
+            progress_bar: bool = True
     ):
         """
         Prediction with a locally saved model.
@@ -496,7 +504,6 @@ class BertBase(BertABC):
             model.cuda()
         return self.predict(dataloader, model, proba, progress_bar)
 
- 
     def format_time(
             self,
             elapsed: float | int
