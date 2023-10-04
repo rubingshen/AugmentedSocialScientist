@@ -157,7 +157,8 @@ class BertBase(BertABC):
             label_names = np.unique(labels)  # unique label names in alphabetical order
             self.dict_labels = dict(zip(label_names, range(len(label_names))))
 
-            print(f"label ids: {self.dict_labels}")
+            if progress_bar:
+                print(f"label ids: {self.dict_labels}")
 
             # Convert to pytorch tensors
             inputs_tensors = torch.tensor(input_ids)
@@ -466,9 +467,30 @@ class BertBase(BertABC):
             torch.cuda.empty_cache()  # release GPU memory
 
         pred = np.concatenate(logits_complete)  # flatten batches
-        print(f"label ids: {self.dict_labels}")
+        if progress_bar:
+            print(f"label ids: {self.dict_labels}")
 
         return softmax(pred, axis=1) if proba else pred
+
+    def load_model(
+        self,
+        model_path: str
+    ):
+        """
+        Load a saved model
+
+        Parameters
+        ----------
+        model_path: str
+            path to the saved model
+
+        Return
+        ------
+        model : huggingface model
+            loaded model
+        """
+        return self.model_sequence_classifier.from_pretrained(model_path)
+    
 
     def predict_with_model(
             self,
@@ -499,7 +521,7 @@ class BertBase(BertABC):
         pred: ndarray of shape (n_samples, n_labels)
             probabilities for each sequence (row) of belonging to each category (column)
         """
-        model = self.model_sequence_classifier.from_pretrained(model_path)
+        model = self.load_model(model_path)
         if torch.cuda.is_available():
             model.cuda()
         return self.predict(dataloader, model, proba, progress_bar)
