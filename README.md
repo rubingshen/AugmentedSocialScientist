@@ -107,7 +107,7 @@ Check [here](https://colab.research.google.com/drive/132_oDik-SOWve31tZ8D1VOx1Sj
 `Bert` is a pre-trained language model for the English language. The module `AugmentedSocialScientist.models` also contains models for other languages:
 
 - `ArabicBert` for Arabic;
-- `Camembert` for French;
+- `Camembert` or `Flaubert` for French;
 - `ChineseBert` for Chinese;
 - `GermanBert` for German;
 - `HindiBert` for Hindi;
@@ -138,7 +138,7 @@ For example, to use the Danish BERT model [DJSammy/bert-base-danish-uncased_BotX
 ```python
 from AugmentedSocialScientist.models import Bert
 
-bert = Bert(model_name="DJSammy/bert-base-danish-uncased_BotXO-ai")
+bert = Bert(model_name="DJSammy/bert-base-danish-cased_BotXO-ai")
 ``````
 
 ## To use a custom `torch.Device`

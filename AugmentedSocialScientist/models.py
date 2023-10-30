@@ -9,7 +9,7 @@ from AugmentedSocialScientist.bert_base import BertBase
 class Bert(BertBase):
     def __init__(
             self,
-            model_name='bert-base-uncased',
+            model_name='bert-base-cased',
             device=None
     ):
         super().__init__(
@@ -65,7 +65,7 @@ class ChineseBert(BertBase):
 class GermanBert(BertBase):
     def __init__(
             self,
-            model_name="dbmdz/bert-base-german-uncased",
+            model_name="dbmdz/bert-base-german-cased",
             device=None
     ):
         super().__init__(
@@ -135,7 +135,7 @@ class RussianBert(BertBase):
 class SpanishBert(BertBase):
     def __init__(
             self,
-            model_name="dccuchile/bert-base-spanish-wwm-uncased",
+            model_name="dccuchile/bert-base-spanish-wwm-cased",
             device=None
     ):
         super().__init__(

@@ -2,6 +2,7 @@ import datetime
 import random
 import time
 import os
+import shutil
 from typing import List, Tuple, Any
 
 import numpy as np
@@ -20,7 +21,7 @@ from AugmentedSocialScientist.bert_abc import BertABC
 class BertBase(BertABC):
     def __init__(
             self,
-            model_name: str = 'bert-base-uncased',
+            model_name: str = 'bert-base-cased',
             tokenizer: Any = BertTokenizer,
             model_sequence_classifier: Any = BertForSequenceClassification,
             device: Device | None = None,
@@ -380,12 +381,9 @@ class BertBase(BertABC):
         if save_model_as is not None:
             # SAVE
             output_dir = "./models/{}".format(save_model_as)
-            try:
-                os.makedirs(output_dir)
-            except FileExistsError:
-                raise FileExistsError(f"The directory {save_model_as} already exists.")
-            except OSError as e:
-                raise OSError(f"Error creating the directory {save_model_as}: {e}")
+            if os.path.exists(output_dir):
+                shutil.rmtree(output_dir)
+            os.makedirs(output_dir)
 
             # Step 1: Save a model, configuration and vocabulary that you have fine-tuned
 
