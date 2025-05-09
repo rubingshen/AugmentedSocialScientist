@@ -12,8 +12,9 @@ from torch.types import Device
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from tqdm.auto import tqdm
 from sklearn.metrics import classification_report, precision_recall_fscore_support
-from transformers import BertForSequenceClassification, BertTokenizer, AdamW, get_linear_schedule_with_warmup,\
+from transformers import BertForSequenceClassification, BertTokenizer, get_linear_schedule_with_warmup,\
                             WEIGHTS_NAME, CONFIG_NAME
+from torch.optim import AdamW
 
 from AugmentedSocialScientist.bert_abc import BertABC
 
