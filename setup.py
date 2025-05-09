@@ -13,7 +13,7 @@ environment = [
 with open("README.md", "r") as fh:
     long_description = fh.read()
     
-setup(name='AugmentedSocialScientist',
+setup(name='augmentedsocialscientist',
       author='Rubing Shen',
       license='MIT',
       author_email='shenrubing1996@gmail.com',
@@ -23,6 +23,6 @@ setup(name='AugmentedSocialScientist',
       description='A Package to Easily Train Bert-Like Models for Text Classification',
       long_description=long_description,
       long_description_content_type="text/markdown",
-      packages=['AugmentedSocialScientist'],
+      packages=['augmentedsocialscientist'],
       zip_safe=False,
       install_requires=environment)
