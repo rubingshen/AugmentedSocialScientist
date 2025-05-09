@@ -1,5 +1,7 @@
 # The Augmented Social Scientist
 
+**Update v3: The package name has been changed to lowercase to comply with the binary distribution format required by PyPI.**
+
 This package makes it extremely easy to train BERT-like models for text classifications. 
 
 For more information on the method and for some use cases from social sciences, see "[The Augmented Social Scientist: Using Sequential Transfer Learning to Annotate Millions of Texts with Human-Level Accuracy](https://journals.sagepub.com/doi/abs/10.1177/00491241221134526)" published on *Sociological Methods & Research* by [Salomé Do](https://sally14.github.io), [Étienne Ollion](https://ollion.cnrs.fr/english/) and [Rubing Shen](https://rubingshen.github.io). 
