@@ -16,7 +16,7 @@ from transformers import BertForSequenceClassification, BertTokenizer, get_linea
                             WEIGHTS_NAME, CONFIG_NAME
 from torch.optim import AdamW
 
-from AugmentedSocialScientist.bert_abc import BertABC
+from augmentedsocialscientist.bert_abc import BertABC
 
 
 class BertBase(BertABC):
