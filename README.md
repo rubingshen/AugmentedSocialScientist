@@ -9,16 +9,8 @@ For more information on the method and for some use cases from social sciences, 
 
 
 ## To install the package
-
-- Use pip
 ```
-pip install AugmentedSocialScientist
-```
-
-- Or, from source
-```
-git clone https://github.com/rubingshen/AugmentedSocialScientist.git  
-pip install ./AugmentedSocialScientist
+pip install augmentedsocialscientist
 ```
 
 ## To train a BERT model
@@ -26,7 +18,7 @@ pip install ./AugmentedSocialScientist
 ### Import 
 
 ```python
-from AugmentedSocialScientist.models import Bert
+from augmentedsocialscientist.models import Bert
 
 bert = Bert()  #instanciation
 ```
@@ -44,7 +36,7 @@ The class `Bert` contains 3 main methods:
 import pandas as pd
 import numpy as np
 
-from AugmentedSocialScientist.models import Bert
+from augmentedsocialscientist.models import Bert
 
 bert = Bert() #instanciation
 
@@ -104,7 +96,7 @@ Check [here](https://colab.research.google.com/drive/132_oDik-SOWve31tZ8D1VOx1Sj
 
 ## Languages supported
 
-`Bert` is a pre-trained language model for the English language. The module `AugmentedSocialScientist.models` also contains models for other languages:
+`Bert` is a pre-trained language model for the English language. The module `augmentedsocialscientist.models` also contains models for other languages:
 
 - `ArabicBert` for Arabic;
 - `Camembert` or `Flaubert` for French;
@@ -123,7 +115,7 @@ To use them, just import the corresponding model and instanciate it as in the pr
 
 For example, to use the French language model `Camembert`:
 ```python
-from AugmentedSocialScientist.models import Camembert
+from augmentedsocialscientist.models import Camembert
 
 bert = Camembert()  #instanciation
 ```
@@ -136,7 +128,7 @@ The package also allows you to use other BERT-like models from [Hugging Face](ht
 For example, to use the Danish BERT model [DJSammy/bert-base-danish-uncased_BotXO-ai](https://huggingface.co/DJSammy/bert-base-danish-uncased_BotXO-ai) from Hugging Face: 
 
 ```python
-from AugmentedSocialScientist.models import Bert
+from augmentedsocialscientist.models import Bert
 
 bert = Bert(model_name="DJSammy/bert-base-danish-cased_BotXO-ai")
 ``````
@@ -145,7 +137,7 @@ bert = Bert(model_name="DJSammy/bert-base-danish-cased_BotXO-ai")
 By default, the package automatically detects the presence of a GPU and uses it to accelerate computation. You can also set your own device, by providing a `torch.Device` object to the parameter `device` when instanciating `Bert`.
 
 ```python
-from AugmentedSocialScientist.models import Bert
+from augmentedsocialscientist.models import Bert
 
 bert = Bert(device=...)  #set your own device
 ```
